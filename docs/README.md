@@ -1,6 +1,6 @@
 ## Title: Semi-Realistic Balloon Inflation Simulation
 
-### Summary**
+### Summary
 Our project aims to simulate the realistic behavior of a balloon as it inflates and interacts with other balloons. We will use a mass-spring simulation model and allow the user to inflate and deflate balloons created of arbitrary da. We will also implement a balloon-balloon collision detection system.
 
 **Team Members:**
