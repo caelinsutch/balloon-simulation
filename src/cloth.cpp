@@ -37,49 +37,58 @@ Cloth::~Cloth() {
 }
 
 void Cloth::buildGrid() {
-  // TODO (Part 1): Build a grid of masses and springs.
+    // Clear any existing point masses and springs
+    point_masses.clear();
+    springs.clear();
 
-  // Vector2D x_range = Vector2D(INF_D, -INF_D);
-  // Vector2D y_range = Vector2D(INF_D, -INF_D);
+    float radius = 0.5;
 
-  // for (int i = 0; i < this->pinned.size(); i++) {
-  //   if (this->pinned[i][0] < x_range.x) {
-  //     x_range.x = this->pinned[i][0];
-  //   } else if (this->pinned[i][0] > x_range.y) {
-  //     x_range.y = this->pinned[i][0];
-  //   }
+    // Generate point masses on a sphere
+    for (int j = 0; j < num_height_points; ++j) {
+        for (int i = 0; i < num_width_points; ++i) {
+            // Calculate spherical coordinates
+            double theta = 2.0 * PI * i / (num_width_points - 1);
+            double phi = PI * j / (num_height_points - 1);
 
-  //   if (this->pinned[i][1] < y_range.x) {
-  //     y_range.x = this->pinned[i][1];
-  //   } else if (this->pinned[i][1] > y_range.y) {
-  //     y_range.y = this->pinned[i][1];
-  //   }
-  // } 
+            // Convert spherical coordinates to Cartesian coordinates
+            double x = radius * sin(phi) * cos(theta);
+            double y = radius * sin(phi) * sin(theta) + 1;
+            double z = radius * cos(phi);
 
-
-  for (int y = 0; y < this->num_height_points; y++) {
-    for (int x = 0; x < this->num_width_points; x++) {
-      double scale_w = (1.0*x+1)/num_width_points;
-      double scale_h = (1.0*y+1)/num_height_points;
-      Vector3D pos;
-      if (this->orientation == HORIZONTAL) {
-        // width: x height: z
-        pos = Vector3D(scale_w*this->width, 1.0, scale_h*this->height);
-      } else {
-        // width: x height: y
-        double offset = double(rand()) / RAND_MAX * 0.002 - 0.001;
-        pos = Vector3D(scale_w*this->width, scale_h*this->height, offset);
-      }
-      bool pin = false;
-      // if (x_range.x <= x && x <= x_range.y && y_range.x <= y && y <= y_range.y) {
-      //   pin = true;
-      // }
-      for (int i = 0; i < this->pinned.size(); i++) {
-        if (this->pinned[i][0] == x && this->pinned[i][1] == y) {
-          pin = true;
+            // Create point mass and add to the list
+            point_masses.emplace_back(Vector3D(x, y, z), false);
         }
-      }
-      this->point_masses.emplace_back(PointMass(pos, pin));
+    }
+
+    // Generate springs
+    for (int j = 0; j < num_height_points; ++j) {
+        for (int i = 0; i < num_width_points; ++i) {
+            PointMass* pm = &point_masses[j * num_width_points + i];
+
+            // Structural springs
+            if (i < num_width_points - 1) {
+                springs.emplace_back(pm, &point_masses[j * num_width_points + i + 1], STRUCTURAL);
+            }
+            if (j < num_height_points - 1) {
+                springs.emplace_back(pm, &point_masses[(j + 1) * num_width_points + i], STRUCTURAL);
+            }
+
+            // Shearing springs
+            if (i < num_width_points - 1 && j < num_height_points - 1) {
+                springs.emplace_back(pm, &point_masses[(j + 1) * num_width_points + i + 1], SHEARING);
+            }
+            if (i > 0 && j < num_height_points - 1) {
+                springs.emplace_back(pm, &point_masses[(j + 1) * num_width_points + i - 1], SHEARING);
+            }
+
+            // Bending springs
+            if (i < num_width_points - 2) {
+                springs.emplace_back(pm, &point_masses[j * num_width_points + i + 2], BENDING);
+            }
+            if (j < num_height_points - 2) {
+                springs.emplace_back(pm, &point_masses[(j + 2) * num_width_points + i], BENDING);
+            }
+        }
     }
   }
 
