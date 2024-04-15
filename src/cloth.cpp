@@ -39,22 +39,6 @@ Cloth::~Cloth() {
 void Cloth::buildGrid() {
   // TODO (Part 1): Build a grid of masses and springs.
 
-  // Vector2D x_range = Vector2D(INF_D, -INF_D);
-  // Vector2D y_range = Vector2D(INF_D, -INF_D);
-
-  // for (int i = 0; i < this->pinned.size(); i++) {
-  //   if (this->pinned[i][0] < x_range.x) {
-  //     x_range.x = this->pinned[i][0];
-  //   } else if (this->pinned[i][0] > x_range.y) {
-  //     x_range.y = this->pinned[i][0];
-  //   }
-
-  //   if (this->pinned[i][1] < y_range.x) {
-  //     y_range.x = this->pinned[i][1];
-  //   } else if (this->pinned[i][1] > y_range.y) {
-  //     y_range.y = this->pinned[i][1];
-  //   }
-  // } 
 
 
 	double radius = std::min(width, height) / 2.0;
