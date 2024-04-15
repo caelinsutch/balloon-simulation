@@ -37,139 +37,111 @@ Cloth::~Cloth() {
 }
 
 void Cloth::buildGrid() {
-    // Clear any existing point masses and springs
-    point_masses.clear();
-    springs.clear();
+  // TODO (Part 1): Build a grid of masses and springs.
 
-    float radius = 0.5;
+  // Vector2D x_range = Vector2D(INF_D, -INF_D);
+  // Vector2D y_range = Vector2D(INF_D, -INF_D);
 
-    // Generate point masses on a sphere
-    for (int j = 0; j < num_height_points; ++j) {
-        for (int i = 0; i < num_width_points; ++i) {
-            // Calculate spherical coordinates
-            double theta = 2.0 * PI * i / (num_width_points - 1);
-            double phi = PI * j / (num_height_points - 1);
+  // for (int i = 0; i < this->pinned.size(); i++) {
+  //   if (this->pinned[i][0] < x_range.x) {
+  //     x_range.x = this->pinned[i][0];
+  //   } else if (this->pinned[i][0] > x_range.y) {
+  //     x_range.y = this->pinned[i][0];
+  //   }
 
-            // Convert spherical coordinates to Cartesian coordinates
-            double x = radius * sin(phi) * cos(theta);
-            double y = radius * sin(phi) * sin(theta) + 1;
-            double z = radius * cos(phi);
+  //   if (this->pinned[i][1] < y_range.x) {
+  //     y_range.x = this->pinned[i][1];
+  //   } else if (this->pinned[i][1] > y_range.y) {
+  //     y_range.y = this->pinned[i][1];
+  //   }
+  // } 
 
-            // Create point mass and add to the list
-            point_masses.emplace_back(Vector3D(x, y, z), false);
-        }
-    }
 
-    // Generate springs
-    for (int j = 0; j < num_height_points; ++j) {
-        for (int i = 0; i < num_width_points; ++i) {
-            PointMass* pm = &point_masses[j * num_width_points + i];
+	double radius = std::min(width, height) / 2.0;
+	Vector3D center(width / 2.0, height / 2.0, 0.0);
 
-            // Structural springs
-            if (i < num_width_points - 1) {
-                springs.emplace_back(pm, &point_masses[j * num_width_points + i + 1], STRUCTURAL);
-            }
-            if (j < num_height_points - 1) {
-                springs.emplace_back(pm, &point_masses[(j + 1) * num_width_points + i], STRUCTURAL);
-            }
+	for (int y = 0; y < this->num_height_points; y++) {
+		for (int x = 0; x < this->num_width_points; x++) {
+			double u = (double)x / (num_width_points - 1);
+			double v = (double)y / (num_height_points - 1);
 
-            // Shearing springs
-            if (i < num_width_points - 1 && j < num_height_points - 1) {
-                springs.emplace_back(pm, &point_masses[(j + 1) * num_width_points + i + 1], SHEARING);
-            }
-            if (i > 0 && j < num_height_points - 1) {
-                springs.emplace_back(pm, &point_masses[(j + 1) * num_width_points + i - 1], SHEARING);
-            }
+			double theta = u * 2.0 * M_PI;
+			double phi = v * M_PI;
 
-            // Bending springs
-            if (i < num_width_points - 2) {
-                springs.emplace_back(pm, &point_masses[j * num_width_points + i + 2], BENDING);
-            }
-            if (j < num_height_points - 2) {
-                springs.emplace_back(pm, &point_masses[(j + 2) * num_width_points + i], BENDING);
-            }
-        }
-    }
-  }
+			Vector3D pos;
+			pos.x = radius * std::cos(theta) * std::sin(phi) + center.x;
+			pos.y = radius * std::sin(theta) * std::sin(phi) + center.y;
+			pos.z = radius * std::cos(phi);
 
-  for (int y = 0; y < this->num_height_points; y++) {
-    for (int x = 0; x < this->num_width_points; x++) {
-      // structural
-      PointMass* current = &(this->point_masses.at(y*num_width_points + x));
-      if (x == 0 && y > 0) {
-        // only above
-        PointMass* above = &(this->point_masses.at((y-1)*num_width_points + x));
-        this->springs.emplace_back(Spring(current, above, STRUCTURAL));
-      } else if (x > 0 && y == 0) {
-        // only left
-        PointMass* left = &(this->point_masses.at(y*num_width_points + (x-1)));
-        this->springs.emplace_back(Spring(current, left, STRUCTURAL));
-      } else if (x > 0 && y > 0) {
-        // all others
-        PointMass* above = &(this->point_masses.at((y-1)*num_width_points + x));
-        this->springs.emplace_back(Spring(current, above, STRUCTURAL));
-        PointMass* left = &(this->point_masses.at(y*num_width_points + (x-1)));
-        this->springs.emplace_back(Spring(current, left, STRUCTURAL));
-      }
-      // shearing
-      if (x == 0 && y > 0) {
-        // only diag upper right
-        PointMass* diag_upper_right = &this->point_masses.at((y-1)*num_width_points + (x+1));
-        this->springs.emplace_back(Spring(current, diag_upper_right, SHEARING));
-      } else if (x == this->num_width_points - 1 && y > 0) {
-        // only diag uppper left
-        PointMass* diag_upper_left = &this->point_masses.at((y-1)*num_width_points + (x-1));
-        this->springs.emplace_back(Spring(current, diag_upper_left, SHEARING));
-      } else if (y > 0) {
-        // all others
-        PointMass* diag_upper_right = &this->point_masses.at((y-1)*num_width_points + (x+1));
-        this->springs.emplace_back(Spring(current, diag_upper_right, SHEARING));
-        PointMass* diag_upper_left = &this->point_masses.at((y-1)*num_width_points + (x-1));
-        this->springs.emplace_back(Spring(current, diag_upper_left, SHEARING));
-      }
-      // bending
-      if (x < 2 && y >= 2) {
-        // only above
-        PointMass* above_2 = &this->point_masses.at((y-2)*num_width_points + x);
-        this->springs.emplace_back(Spring(current, above_2, BENDING));
-      } else if (x >= 2 && y < 2) {
-        // only left
-        PointMass* left_2 = &this->point_masses.at(y*num_width_points + (x-2));
-        this->springs.emplace_back(Spring(current, left_2, BENDING));
-      } else if (x >= 2 && y >= 2) {
-        // all others
-        PointMass* above_2 = &this->point_masses.at((y-2)*num_width_points + x);
-        this->springs.emplace_back(Spring(current, above_2, BENDING));
-        PointMass* left_2 = &this->point_masses.at(y*num_width_points + (x-2));
-        this->springs.emplace_back(Spring(current, left_2, BENDING));
-      }
-    }
-  }
+			bool pin = false;
+			for (int i = 0; i < this->pinned.size(); i++) {
+				if (this->pinned[i][0] == x && this->pinned[i][1] == y) {
+					pin = true;
+				}
+			}
+
+			this->point_masses.emplace_back(PointMass(pos, pin));
+		}
+	}
+
+	for (int j = 0; j < num_height_points; ++j) {
+		for (int i = 0; i < num_width_points; ++i) {
+			PointMass* pm = &point_masses[j * num_width_points + i];
+
+			// Structural springs
+			if (i < num_width_points - 1) {
+				springs.emplace_back(pm, &point_masses[j * num_width_points + i + 1], STRUCTURAL);
+			}
+			if (j < num_height_points - 1) {
+				springs.emplace_back(pm, &point_masses[(j + 1) * num_width_points + i], STRUCTURAL);
+			}
+
+			// Shearing springs
+			if (i < num_width_points - 1 && j < num_height_points - 1) {
+				springs.emplace_back(pm, &point_masses[(j + 1) * num_width_points + i + 1], SHEARING);
+			}
+			if (i > 0 && j < num_height_points - 1) {
+				springs.emplace_back(pm, &point_masses[(j + 1) * num_width_points + i - 1], SHEARING);
+			}
+
+			// Bending springs
+			if (i < num_width_points - 2) {
+				springs.emplace_back(pm, &point_masses[j * num_width_points + i + 2], BENDING);
+			}
+			if (j < num_height_points - 2) {
+				springs.emplace_back(pm, &point_masses[(j + 2) * num_width_points + i], BENDING);
+			}
+		}
+	}
 }
 
 void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParameters *cp,
                      vector<Vector3D> external_accelerations,
                      vector<CollisionObject *> *collision_objects) {
-  double mass = width * height * cp->density / num_width_points / num_height_points;
-  double delta_t = 1.0f / frames_per_sec / simulation_steps;
+	double mass = width * height * cp->density / num_width_points / num_height_points;
+	double delta_t = 1.0f / frames_per_sec / simulation_steps;
 
-  // TODO (Part 2): Compute total force acting on each point mass.
+	// TODO (Part 2): Compute total force acting on each point mass.
 	Vector3D external_force = Vector3D(0.0, 0.0, 0.0);
 	for (int i = 0; i < external_accelerations.size(); i++) {
 		// F = ma
 		external_force += external_accelerations[i] * mass;
 	}
+
+	// Apply outward force to each point mass
+	double inflation_force = 1.0; // Adjust this value to control the inflation strength
 	for (int i = 0; i < point_masses.size(); i++) {
-		// total force
-		point_masses[i].forces = external_force;
+		Vector3D normal = point_masses[i].position - Vector3D(width / 2.0, height / 2.0, 0.0);
+		normal.normalize();
+		point_masses[i].forces = external_force + normal * inflation_force;
 	}
 
-  // TODO (Part 2): Use Verlet integration to compute new point mass positions
-	for (int i = 0; i < point_masses.size(); i ++) {
+	// TODO (Part 2): Use Verlet integration to compute new point mass positions
+	for (int i = 0; i < point_masses.size(); i++) {
 		if (point_masses[i].pinned) continue;
 		Vector3D a = point_masses[i].forces / mass;
 		// Verlet integration
-		Vector3D new_position = point_masses[i].position + (1 - cp -> damping / 100.0) * (point_masses[i].position - point_masses[i].last_position) + a * delta_t * delta_t;
+		Vector3D new_position = point_masses[i].position + (1 - cp->damping / 100.0) * (point_masses[i].position - point_masses[i].last_position) + a * delta_t * delta_t;
 		// Update last position
 		point_masses[i].last_position = point_masses[i].position;
 		point_masses[i].position = new_position;
@@ -179,9 +151,9 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
 
   // TODO (Part 4): Handle self-collisions.
 	build_spatial_map();
-	for (int i = 0; i < point_masses.size(); i ++) {
-		self_collide(point_masses[i], simulation_steps);
-	}
+//	for (int i = 0; i < point_masses.size(); i ++) {
+//		self_collide(point_masses[i], simulation_steps);
+//	}
 
 
 	// TODO (Part 3): Handle collisions with other primitives.
