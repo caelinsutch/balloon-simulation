@@ -101,6 +101,9 @@ For each point mass, we compute the direction vector from the center of the clot
 
 - [With Failing Expansion Logic](https://www.loom.com/share/2fd85fa057d04513b58a0bb862e3ed2b)
 
+## Update Video
+[https://youtu.be/dOOmYj_uxRc]https://youtu.be/dOOmYj_uxRc
+
 ### Progress Relative to Plan
 
 We're currently behind schedule due to the issues with the balloon shape. We will need to spend more time debugging and refactoring the code to achieve a closed shape. We will also need to adjust our work plan to account for the additional time required to complete this task.
