@@ -102,8 +102,10 @@ For each point mass, we compute the direction vector from the center of the clot
 
 - [With Failing Expansion Logic](https://www.loom.com/share/2fd85fa057d04513b58a0bb862e3ed2b)
 
-### Update Video
-[https://youtu.be/dOOmYj_uxRc](https://youtu.be/dOOmYj_uxRc)
+### Links
+[Video](https://youtu.be/dOOmYj_uxRc)
+
+[Slides](https://docs.google.com/presentation/d/1wMRkyjOQitPNDQzANH1oRUCLdz0gEiDiOveB_TAGoyQ/edit?usp=sharing)
 
 ### Progress Relative to Plan
 
