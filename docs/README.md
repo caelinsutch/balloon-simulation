@@ -9,6 +9,7 @@ Our project aims to simulate the realistic behavior of a balloon as it inflates 
 - Alicia Shanahan
 - Brandon Guo
 - Caelin Sutch
+- Jason Telanoff
 
 ### Problem Description:
 Simulating the realistic behavior of deformable objects, such as balloons, is a challenging problem in computer graphics. Accurately representing the stretching and tearing of the balloon material requires modeling its physical properties, such as elasticity and tensile strength. Additionally, the internal air pressure must be simulated to drive the balloon's expansion.
@@ -101,7 +102,7 @@ For each point mass, we compute the direction vector from the center of the clot
 
 - [With Failing Expansion Logic](https://www.loom.com/share/2fd85fa057d04513b58a0bb862e3ed2b)
 
-## Update Video
+### Update Video
 [https://youtu.be/dOOmYj_uxRc](https://youtu.be/dOOmYj_uxRc)
 
 ### Progress Relative to Plan
