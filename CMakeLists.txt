@@ -134,8 +134,8 @@ if(WIN32)
 
     if(BUILD_DEBUG)
         set(CMAKE_BUILD_TYPE Debug)
-    else(BUILD_DEBUG)
-        set(CMAKE_BUILD_TYPE Release)
+    #else(BUILD_DEBUG)
+    #    set(CMAKE_BUILD_TYPE Release)
     endif(BUILD_DEBUG)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_CXX_FLAGS}")

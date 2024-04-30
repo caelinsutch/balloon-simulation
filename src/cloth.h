@@ -48,6 +48,7 @@ struct Cloth {
   ~Cloth();
 
   void buildGrid();
+  //void buildGridHelper(double x_offset, double y_offset, double z_offset, bool horizontal);
 
   void simulate(double frames_per_sec, double simulation_steps, ClothParameters *cp,
                 vector<Vector3D> external_accelerations,
@@ -66,6 +67,7 @@ struct Cloth {
   int num_width_points;
   int num_height_points;
   double thickness;
+  float inflation_force;
   e_orientation orientation;
 
   // Cloth components

@@ -20,17 +20,23 @@ out vec2 v_uv;
 out vec4 v_tangent;
 
 float h(vec2 uv) {
-  // You may want to use this helper function...
-  return 0.0;
+    return texture(u_texture_2, uv).r;
 }
 
 void main() {
-  // YOUR CODE HERE
-  
-  // (Placeholder code. You will want to replace it.)
-  v_position = u_model * in_position;
-  v_normal = normalize(u_model * in_normal);
-  v_uv = in_uv;
-  v_tangent = normalize(u_model * in_tangent);
-  gl_Position = u_view_projection * u_model * in_position;
+    float height = h(in_uv) * u_height_scaling;
+
+    vec3 displaced_position = in_position.xyz + in_normal.xyz * height;
+
+    vec4 world_displaced_position = u_model * vec4(displaced_position, 1.0);
+
+    vec3 world_normal = normalize(mat3(u_model) * in_normal.xyz);
+    vec3 world_tangent = normalize(mat3(u_model) * in_tangent.xyz);
+
+    v_position = world_displaced_position;
+    v_normal = vec4(world_normal, 0.0);
+    v_uv = in_uv;
+    v_tangent = vec4(world_tangent, 0.0);
+
+    gl_Position = u_view_projection * world_displaced_position;
 }

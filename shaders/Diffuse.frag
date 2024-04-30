@@ -25,9 +25,12 @@ in vec4 v_normal;
 out vec4 out_color;
 
 void main() {
-  // YOUR CODE HERE
-  
-  // (Placeholder code. You will want to replace it.)
-  out_color = (vec4(1, 1, 1, 0) + v_normal) / 2;
-  out_color.a = 1;
+    vec3 light_direction = normalize(u_light_pos - v_position.xyz);
+
+    float diffuse_intensity = max(dot(v_normal.xyz, light_direction), 0.0);
+
+    vec3 color = (u_light_intensity / (distance(u_light_pos, v_position.xyz) * distance(u_light_pos, v_position.xyz))) * diffuse_intensity * u_color.rgb;
+
+    // Set the alpha value of the output color to 1
+    out_color = vec4(color, 1.0);
 }

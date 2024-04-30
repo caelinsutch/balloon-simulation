@@ -5,7 +5,9 @@ using namespace CGL;
 using namespace std;
 
 Vector3D PointMass::normal() {
+    return norm;
   Vector3D n(0, 0, 0);
+  return n;
 
   Halfedge *start = halfedge;
   Halfedge *iter = start;
